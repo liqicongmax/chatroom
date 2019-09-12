@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>websocket</title>
+    <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.min.js"></script>
+    <script src="http://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
+    <script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
+</head>
+
+<body>
+<div style="margin: auto;text-align: center">
+    <h1>Welcome to websocket</h1>
+</div>
+<br/>
+<div style="margin: auto;text-align: center">
+    <select id="onLineUser">
+        <option>--所有--</option>
+    </select>
+    <input id="text" type="text"/>
+    <button onclick="send()">发送消息</button>
+</div>
+<br>
+<div style="margin-right: 10px;text-align: right">
+    <button onclick="closeWebSocket()">关闭连接</button>
+</div>
+<br/>
+<div id="message" style="text-align: center;"></div>
+<div style="text-align: center;" id="online"></div>
+<input type="text" th:value="${username}" id="username" style="display: none"/>
+
+
+</body>
+
+
+<script type="text/javascript">
+    var messageSocket;
+    if ("WebSocket" in window) {
+        messageSocket = new WebSocket("ws://localhost:8079/websocket/message/" + document.getElementById('username').value);
+
+        //连通之后的回调事件
+        //onOpen
+        messageSocket.onopen = function () {
+            //messageSocket.send( document.getElementById('username').value+"已经上线了");
+            console.log("已经连通了websocket");
+            setMessageInnerHTML("已经连通了websocket");
+        };
+
+        //接收后台服务端的消息
+        //后台sendMessage的回调
+        //onMessage
+        messageSocket.onmessage = function (evt) {
+            var received_msg = evt.data;
+            console.log(received_msg);
+            var obj = JSON.parse(received_msg);
+            if (obj.login != null && obj.login !== "") {
+                console.log("登录消息" + obj.login);
+            }
+            setMessageInnerHTML("登录消息" + obj.login);
+            var nameList = obj.nameList;
+            var onlineList = "在线列表";
+            for (var i = 0; i < nameList.length; i++) {
+                onlineList+='<li>'+nameList[i]+'</li>';
+            }
+            $("#online").append(onlineList)
+        };
+
+        //连接关闭的回调事件
+        //onClose
+        messageSocket.onclose = function () {
+            console.log("连接已关闭...");
+            setMessageInnerHTML("连接已经关闭....");
+        };
+    } else {
+        // 浏览器不支持 WebSocket
+        alert("您的浏览器不支持 WebSocket!");
+    }
+
+    //将消息显示在网页上
+    function setMessageInnerHTML(innerHTML) {
+        document.getElementById('message').innerHTML += innerHTML + '<br/>';
+    }
+
+    function setOnlineInnerHtml(innerHTML) {
+        document.getElementById('online').innerHTML += innerHTML + '<br/>';
+    }
+
+    function closeWebSocket() {
+        //直接关闭websocket的连接
+        messageSocket.close();
+    }
+
+    function send() {
+        var selectText = $("#onLineUser").find("option:selected").text();
+        if (selectText == "--所有--") {
+            selectText = "All";
+        } else {
+            setMessageInnerHTML(document.getElementById('username').value + "对" + selectText + "说：" + $("#text").val());
+        }
+        var message = {
+            "message": document.getElementById('text').value,
+            "username": document.getElementById('username').value,
+            "to": selectText
+        };
+        messageSocket.send(JSON.stringify(message));
+        $("#text").val("");
+
+    }
+</script>
+
+</html>
