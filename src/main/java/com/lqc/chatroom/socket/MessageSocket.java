@@ -1,5 +1,6 @@
 package com.lqc.chatroom.socket;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -46,10 +47,9 @@ public class MessageSocket {
         jsonObject.put("nameList",nameList);
         broadCastMessage(jsonObject.toJSONString());
         //在线列表添加用户信息
-//        JSONObject jsonObject=new JSONObject();
 
+        //消息发送
 
-//        throw new Exception();
     }
     private List<String> getUserList(){
         List<String> nameList=new ArrayList<>();
@@ -63,8 +63,19 @@ public class MessageSocket {
         return nameList;
     }
 
+    /**
+     * 接收前端发送的消息进行解码并操作
+     * @version1 暂时先只发送点对点的文字通知消息
+     * @param message json字符串
+     * @param session
+     * @throws IOException
+     */
     @OnMessage
     public void onMessage(String message,Session session)throws IOException{
+        JSONObject jsonObject=new JSONObject();
+        jsonObject= JSON.parseObject(message);
+        String username=jsonObject.getString("username");
+        String messageNeedToSend=jsonObject.get("message")
 //        session.close();
 
 

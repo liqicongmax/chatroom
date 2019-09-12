@@ -35,9 +35,7 @@
 </div>
 
 <div style="margin: auto;text-align: center">
-    <select id="onLineUser">
-        <option>--所有--</option>
-    </select>
+    <select id="online"></select>
     <input id="text" type="text"/>
     <button onclick="send()">发送消息</button>
 </div>
@@ -47,7 +45,7 @@
 </div>
 <br/>
 <div id="message" style="text-align: center;"></div>
-<div style="text-align: center;" id="online"></div>
+<!--<div style="text-align: center;" id="online"></div>-->
 <input type="text" th:value="${username}" id="username" style="display: none"/>
 
 
@@ -79,13 +77,19 @@
                 console.log("登录消息" + obj.login);
             }
             setMessageInnerHTML("登录消息" + obj.login);
-            $("#onlineList").empty();
-            var nameList = obj.nameList;
-            var onlineList = "";
-            for (var i = 0; i < nameList.length; i++) {
-                onlineList += '<li class="list-group-item">' + nameList[i] + '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+'</li>';
+            if(obj.nameList!=null) {
+                $("#onlineList").empty();
+                $("#online").empty();
+                var nameList = obj.nameList;
+                var onlineList = "";
+                var online = "<option>所有人</option>";
+                for (var i = 0; i < nameList.length; i++) {
+                    onlineList += '<li class="list-group-item">' + nameList[i] + '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>' + '</li>';
+                    online+="<option>"+nameList[i]+"</option>";
+                }
+                $("#online").append(online);
+                $("#onlineList").append(onlineList);
             }
-            $("#onlineList").append(onlineList);
         };
 
         //连接关闭的回调事件
@@ -114,8 +118,8 @@
     }
 
     function send() {
-        var selectText = $("#onLineUser").find("option:selected").text();
-        if (selectText == "--所有--") {
+        var selectText = $("#online").find("option:selected").text();
+        if (selectText == "所有人") {
             selectText = "All";
         } else {
             setMessageInnerHTML(document.getElementById('username').value + "对" + selectText + "说：" + $("#text").val());
