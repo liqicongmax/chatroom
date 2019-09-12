@@ -2,3 +2,7 @@ server:
   port: 8079
   servlet:
     context-path: /websocket
+
+spring:
+  thymeleaf:
+    cache: false

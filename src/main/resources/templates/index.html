@@ -2,16 +2,38 @@
 <html xmlns:th="http://www.w3.org/1999/xhtml">
 <head>
     <title>websocket</title>
-    <script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.min.js"></script>
-    <script src="http://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>
-    <script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>
+    <!--<script type="text/javascript" src="http://ajax.microsoft.com/ajax/jquery/jquery-1.4.min.js"></script>-->
+    <!--<script src="https://cdn.bootcss.com/jquery/3.4.0/core.js"></script>-->
+    <script src="https://cdn.bootcss.com/jquery/3.4.0/jquery.min.js"></script>
+    <!--<script src="http://cdn.bootcss.com/stomp.js/2.3.3/stomp.min.js"></script>-->
+    <!--<script src="https://cdn.bootcss.com/sockjs-client/1.1.4/sockjs.min.js"></script>-->
 </head>
 
 <body>
+<style>
+    .list-group-item {
+        width: 300px;
+    }
+</style>
 <div style="margin: auto;text-align: center">
     <h1>Welcome to websocket</h1>
 </div>
 <br/>
+<div class="panel panel-default" style="width: 400px; float: left">
+    <div class="panel-heading" style="width: 400px">
+        在线列表
+    </div>
+    <div class="panel-body">
+        <ul class="list-group" id="onlineList">
+            <li class="list-group-item">Cras justo odio</li>
+            <li class="list-group-item">Dapibus ac facilisis in</li>
+            <li class="list-group-item">Morbi leo risus</li>
+            <li class="list-group-item">Porta ac consectetur ac</li>
+            <li class="list-group-item">Vestibulum at eros</li>
+        </ul>
+    </div>
+</div>
+
 <div style="margin: auto;text-align: center">
     <select id="onLineUser">
         <option>--所有--</option>
@@ -49,6 +71,7 @@
         //后台sendMessage的回调
         //onMessage
         messageSocket.onmessage = function (evt) {
+
             var received_msg = evt.data;
             console.log(received_msg);
             var obj = JSON.parse(received_msg);
@@ -56,12 +79,13 @@
                 console.log("登录消息" + obj.login);
             }
             setMessageInnerHTML("登录消息" + obj.login);
+            $("#onlineList").empty();
             var nameList = obj.nameList;
-            var onlineList = "在线列表";
+            var onlineList = "";
             for (var i = 0; i < nameList.length; i++) {
-                onlineList+='<li>'+nameList[i]+'</li>';
+                onlineList += '<li class="list-group-item">' + nameList[i] + '<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>'+'</li>';
             }
-            $("#online").append(onlineList)
+            $("#onlineList").append(onlineList);
         };
 
         //连接关闭的回调事件
@@ -106,5 +130,17 @@
 
     }
 </script>
+<!-- 最新版本的 Bootstrap 核心 CSS 文件 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap.min.css"
+      integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+<!-- 可选的 Bootstrap 主题文件（一般不用引入） -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/css/bootstrap-theme.min.css"
+      integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+<!-- 最新的 Bootstrap 核心 JavaScript 文件 -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@3.3.7/dist/js/bootstrap.min.js"
+        integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
+        crossorigin="anonymous"></script>
 
 </html>
